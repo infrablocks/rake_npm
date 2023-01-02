@@ -50,14 +50,18 @@ describe RakeNPM::Tasks::RunScript do
   end
 
   it 'runs the specified NPM script' do
-    define_task
+    define_task(
+      script: 'test'
+    )
 
     stub_output
     stub_npm_run_script
 
     Rake::Task['npm:run_script'].invoke
 
-    expect(RubyNPM).to(have_received(:run_script))
+    expect(RubyNPM)
+      .to(have_received(:run_script)
+            .with(hash_including(script: 'test')))
   end
 
   def stub_output
