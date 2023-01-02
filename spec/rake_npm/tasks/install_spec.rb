@@ -44,6 +44,30 @@ describe RakeNPM::Tasks::Install do
     expect(RubyNPM).to(have_received(:install))
   end
 
+  it 'passes a color parameter of true by default' do
+    define_task
+    stub_npm_install
+
+    Rake::Task['npm:install'].invoke
+
+    expect(RubyNPM)
+      .to(have_received(:install)
+            .with(hash_including(color: true)))
+  end
+
+  it 'passes the provided value for the color parameter when present' do
+    define_task do |task|
+      task.color = false
+    end
+    stub_npm_install
+
+    Rake::Task['npm:install'].invoke
+
+    expect(RubyNPM)
+      .to(have_received(:install)
+            .with(hash_including(color: false)))
+  end
+
   def stub_npm_install
     allow(RubyNPM).to(receive(:install))
   end
