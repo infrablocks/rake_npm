@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'rake_factory'
+require 'ruby_npm'
 
 module RakeNPM
   module Tasks
@@ -10,8 +11,9 @@ module RakeNPM
         'Install NPM dependencies'
       end)
 
-      action do |task|
-        # no-op
+      action do |_|
+        puts 'Installing NPM dependencies...'
+        RubyNPM.install
       end
     end
   end

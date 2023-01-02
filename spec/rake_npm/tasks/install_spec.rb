@@ -34,4 +34,17 @@ describe RakeNPM::Tasks::Install do
     expect(Rake.application).to(have_task_defined('npm1:install'))
     expect(Rake.application).to(have_task_defined('npm2:install'))
   end
+
+  it 'installs npm dependencies' do
+    define_task
+    stub_npm_install
+
+    Rake::Task['npm:install'].invoke
+
+    expect(RubyNPM).to(have_received(:install))
+  end
+
+  def stub_npm_install
+    allow(RubyNPM).to(receive(:install))
+  end
 end
