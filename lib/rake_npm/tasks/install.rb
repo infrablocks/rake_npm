@@ -11,12 +11,16 @@ module RakeNPM
         'Install NPM dependencies'
       end)
 
-      parameter :color, default: true
+      parameter :color, default: 'always'
+      parameter :fund, default: false
+      parameter :audit, default: true
 
       action do |task|
         puts 'Installing NPM dependencies...'
         RubyNPM.install(
-          color: task.color
+          color: task.color,
+          fund: task.fund,
+          audit: task.audit
         )
       end
     end

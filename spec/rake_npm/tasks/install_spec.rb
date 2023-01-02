@@ -37,6 +37,8 @@ describe RakeNPM::Tasks::Install do
 
   it 'installs npm dependencies' do
     define_task
+
+    stub_output
     stub_npm_install
 
     Rake::Task['npm:install'].invoke
@@ -44,21 +46,25 @@ describe RakeNPM::Tasks::Install do
     expect(RubyNPM).to(have_received(:install))
   end
 
-  it 'passes a color parameter of true by default' do
+  it 'passes a color parameter of "always" by default' do
     define_task
+
+    stub_output
     stub_npm_install
 
     Rake::Task['npm:install'].invoke
 
     expect(RubyNPM)
       .to(have_received(:install)
-            .with(hash_including(color: true)))
+            .with(hash_including(color: 'always')))
   end
 
   it 'passes the provided value for the color parameter when present' do
     define_task do |task|
       task.color = false
     end
+
+    stub_output
     stub_npm_install
 
     Rake::Task['npm:install'].invoke
@@ -66,6 +72,69 @@ describe RakeNPM::Tasks::Install do
     expect(RubyNPM)
       .to(have_received(:install)
             .with(hash_including(color: false)))
+  end
+
+  it 'passes a fund parameter of false by default' do
+    define_task
+
+    stub_output
+    stub_npm_install
+
+    Rake::Task['npm:install'].invoke
+
+    expect(RubyNPM)
+      .to(have_received(:install)
+            .with(hash_including(fund: false)))
+  end
+
+  it 'passes the provided value for the fund parameter when present' do
+    define_task do |task|
+      task.fund = true
+    end
+
+    stub_output
+    stub_npm_install
+
+    Rake::Task['npm:install'].invoke
+
+    expect(RubyNPM)
+      .to(have_received(:install)
+            .with(hash_including(fund: true)))
+  end
+
+  it 'passes an audit parameter of true by default' do
+    define_task
+
+    stub_output
+    stub_npm_install
+
+    Rake::Task['npm:install'].invoke
+
+    expect(RubyNPM)
+      .to(have_received(:install)
+            .with(hash_including(audit: true)))
+  end
+
+  it 'passes the provided value for the audit parameter when present' do
+    define_task do |task|
+      task.audit = false
+    end
+
+    stub_output
+    stub_npm_install
+
+    Rake::Task['npm:install'].invoke
+
+    expect(RubyNPM)
+      .to(have_received(:install)
+            .with(hash_including(audit: false)))
+  end
+
+  def stub_output
+    %i[print puts].each do |method|
+      allow($stdout).to(receive(method))
+      allow($stderr).to(receive(method))
+    end
   end
 
   def stub_npm_install
