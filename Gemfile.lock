@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    rake_npm (0.1.0.pre.0)
+    rake_npm (0.1.0.pre.1)
       colored2 (~> 3.1)
       rake_dependencies (~> 3.1)
       rake_factory (~> 0.23)
@@ -155,4 +155,4 @@ DEPENDENCIES
   simplecov
 
 BUNDLED WITH
-   2.3.22
+   2.4.2
