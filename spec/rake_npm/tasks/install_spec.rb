@@ -39,6 +39,7 @@ describe RakeNPM::Tasks::Install do
     define_task
 
     stub_output
+    stub_chdir
     stub_npm_install
 
     Rake::Task['npm:install'].invoke
@@ -46,17 +47,46 @@ describe RakeNPM::Tasks::Install do
     expect(RubyNPM).to(have_received(:install))
   end
 
+  it 'does not change the directory by default' do
+    define_task
+
+    stub_output
+    stub_chdir
+    stub_npm_install
+
+    Rake::Task['npm:install'].invoke
+
+    expect(Dir)
+      .not_to(have_received(:chdir))
+  end
+
+  it 'changes to the specified directory when directory provided' do
+    define_task(
+      directory: 'some/path'
+    )
+
+    stub_output
+    stub_chdir
+    stub_npm_install
+
+    Rake::Task['npm:install'].invoke
+
+    expect(Dir)
+      .to(have_received(:chdir).with('some/path'))
+  end
+
   it 'passes a color parameter of "always" by default' do
     define_task
 
     stub_output
+    stub_chdir
     stub_npm_install
 
     Rake::Task['npm:install'].invoke
 
     expect(RubyNPM)
       .to(have_received(:install)
-            .with(hash_including(color: 'always')))
+            .with(hash_including(color: 'always'), anything))
   end
 
   it 'passes the provided value for the color parameter when present' do
@@ -65,26 +95,28 @@ describe RakeNPM::Tasks::Install do
     end
 
     stub_output
+    stub_chdir
     stub_npm_install
 
     Rake::Task['npm:install'].invoke
 
     expect(RubyNPM)
       .to(have_received(:install)
-            .with(hash_including(color: false)))
+            .with(hash_including(color: false), anything))
   end
 
   it 'passes a fund parameter of false by default' do
     define_task
 
     stub_output
+    stub_chdir
     stub_npm_install
 
     Rake::Task['npm:install'].invoke
 
     expect(RubyNPM)
       .to(have_received(:install)
-            .with(hash_including(fund: false)))
+            .with(hash_including(fund: false), anything))
   end
 
   it 'passes the provided value for the fund parameter when present' do
@@ -93,26 +125,28 @@ describe RakeNPM::Tasks::Install do
     end
 
     stub_output
+    stub_chdir
     stub_npm_install
 
     Rake::Task['npm:install'].invoke
 
     expect(RubyNPM)
       .to(have_received(:install)
-            .with(hash_including(fund: true)))
+            .with(hash_including(fund: true), anything))
   end
 
   it 'passes an audit parameter of true by default' do
     define_task
 
     stub_output
+    stub_chdir
     stub_npm_install
 
     Rake::Task['npm:install'].invoke
 
     expect(RubyNPM)
       .to(have_received(:install)
-            .with(hash_including(audit: true)))
+            .with(hash_including(audit: true), anything))
   end
 
   it 'passes the provided value for the audit parameter when present' do
@@ -121,13 +155,49 @@ describe RakeNPM::Tasks::Install do
     end
 
     stub_output
+    stub_chdir
     stub_npm_install
 
     Rake::Task['npm:install'].invoke
 
     expect(RubyNPM)
       .to(have_received(:install)
-            .with(hash_including(audit: false)))
+            .with(hash_including(audit: false), anything))
+  end
+
+  it 'provides an empty environment by default' do
+    define_task
+
+    stub_output
+    stub_chdir
+    stub_npm_install
+
+    Rake::Task['npm:install'].invoke
+
+    expect(RubyNPM)
+      .to(have_received(:install)
+            .with(anything, hash_including(environment: {})))
+  end
+
+  it 'uses the specified environment when provided' do
+    define_task(
+      environment: {
+        KEY: 'value'
+      }
+    )
+
+    stub_output
+    stub_chdir
+    stub_npm_install
+
+    Rake::Task['npm:install'].invoke
+
+    expect(RubyNPM)
+      .to(have_received(:install)
+            .with(anything,
+                  hash_including(environment: {
+                                   KEY: 'value'
+                                 })))
   end
 
   def stub_output
@@ -135,6 +205,10 @@ describe RakeNPM::Tasks::Install do
       allow($stdout).to(receive(method))
       allow($stderr).to(receive(method))
     end
+  end
+
+  def stub_chdir
+    allow(Dir).to(receive(:chdir).and_yield)
   end
 
   def stub_npm_install

@@ -55,13 +55,109 @@ describe RakeNPM::Tasks::RunScript do
     )
 
     stub_output
+    stub_chdir
     stub_npm_run_script
 
     Rake::Task['npm:run_script'].invoke
 
     expect(RubyNPM)
       .to(have_received(:run_script)
-            .with(hash_including(script: 'test')))
+            .with(hash_including(script: 'test'), anything))
+  end
+
+  it 'does not change the directory by default' do
+    define_task(
+      script: 'test'
+    )
+
+    stub_output
+    stub_chdir
+    stub_npm_run_script
+
+    Rake::Task['npm:run_script'].invoke
+
+    expect(Dir)
+      .not_to(have_received(:chdir))
+  end
+
+  it 'changes to the specified directory when directory provided' do
+    define_task(
+      directory: 'some/path'
+    )
+
+    stub_output
+    stub_chdir
+    stub_npm_run_script
+
+    Rake::Task['npm:run_script'].invoke
+
+    expect(Dir)
+      .to(have_received(:chdir).with('some/path'))
+  end
+
+  it 'passes a color parameter of "always" by default' do
+    define_task
+
+    stub_output
+    stub_chdir
+    stub_npm_run_script
+
+    Rake::Task['npm:run_script'].invoke
+
+    expect(RubyNPM)
+      .to(have_received(:run_script)
+            .with(hash_including(color: 'always'), anything))
+  end
+
+  it 'passes the provided value for the color parameter when present' do
+    define_task do |task|
+      task.color = false
+    end
+
+    stub_output
+    stub_chdir
+    stub_npm_run_script
+
+    Rake::Task['npm:run_script'].invoke
+
+    expect(RubyNPM)
+      .to(have_received(:run_script)
+            .with(hash_including(color: false), anything))
+  end
+
+  it 'provides an empty environment by default' do
+    define_task
+
+    stub_output
+    stub_chdir
+    stub_npm_run_script
+
+    Rake::Task['npm:run_script'].invoke
+
+    expect(RubyNPM)
+      .to(have_received(:run_script)
+            .with(anything, hash_including(environment: {})))
+  end
+
+  it 'uses the specified environment when provided' do
+    define_task(
+      environment: {
+        KEY: 'value'
+      }
+    )
+
+    stub_output
+    stub_chdir
+    stub_npm_run_script
+
+    Rake::Task['npm:run_script'].invoke
+
+    expect(RubyNPM)
+      .to(have_received(:run_script)
+            .with(anything,
+                  hash_including(environment: {
+                                   KEY: 'value'
+                                 })))
   end
 
   def stub_output
@@ -69,6 +165,10 @@ describe RakeNPM::Tasks::RunScript do
       allow($stdout).to(receive(method))
       allow($stderr).to(receive(method))
     end
+  end
+
+  def stub_chdir
+    allow(Dir).to(receive(:chdir).and_yield)
   end
 
   def stub_npm_run_script
