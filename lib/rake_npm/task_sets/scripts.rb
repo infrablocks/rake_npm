@@ -12,12 +12,10 @@ module RakeNPM
         scripts = lookup_scripts(parameter_values[:directory])
 
         around_define(application) do
-          scripts.keys.each do |script|
-            options = { name: script, script: script }
-            TaskSpecification
-              .new(Tasks::RunScript, [options])
-              .for_task_set(self)
-              .define_on(application)
+          scripts.each_key do |script|
+            define_run_script_on(
+              application, { name: script, script: script }
+            )
           end
         end
 
@@ -25,6 +23,13 @@ module RakeNPM
       end
 
       private
+
+      def define_run_script_on(application, options)
+        TaskSpecification
+          .new(Tasks::RunScript, [options])
+          .for_task_set(self)
+          .define_on(application)
+      end
 
       def lookup_scripts(directory)
         path = File.join(directory, 'package.json')
