@@ -16,6 +16,7 @@ module RakeNPM
       end)
 
       parameter :script, required: true
+      parameter :arguments
 
       parameter :color, default: 'always'
 
@@ -34,6 +35,7 @@ module RakeNPM
           RubyNPM.run_script(
             {
               script: task.script,
+              arguments: task.arguments,
               color: task.color
             },
             {

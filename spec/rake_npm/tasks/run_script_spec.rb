@@ -160,6 +160,36 @@ describe RakeNPM::Tasks::RunScript do
                                  })))
   end
 
+  it 'provides no arguments by default' do
+    define_task
+
+    stub_output
+    stub_chdir
+    stub_npm_run_script
+
+    Rake::Task['npm:run_script'].invoke
+
+    expect(RubyNPM)
+      .to(have_received(:run_script)
+            .with(hash_including(arguments: nil), anything))
+  end
+
+  it 'uses the specified arguments when provided' do
+    define_task(
+      arguments: %w[--first --second]
+    )
+
+    stub_output
+    stub_chdir
+    stub_npm_run_script
+
+    Rake::Task['npm:run_script'].invoke
+
+    expect(RubyNPM)
+      .to(have_received(:run_script)
+            .with(hash_including(arguments: %w[--first --second]), anything))
+  end
+
   def stub_output
     %i[print puts].each do |method|
       allow($stdout).to(receive(method))
