@@ -1,3 +1,3 @@
 # frozen_string_literal: true
 
-require_relative 'task_sets/npm'
+require_relative 'task_sets/scripts'
