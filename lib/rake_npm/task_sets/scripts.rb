@@ -11,6 +11,10 @@ module RakeNPM
       parameter :include, default: nil
       parameter :exclude, default: nil
 
+      parameter :environment, default: {}
+
+      parameter :argument_names
+
       def define_on(application)
         around_define(application) do
           scripts.each_key do |script|

@@ -178,6 +178,91 @@ describe RakeNPM::TaskSets::Scripts do
     end
   end
 
+  it 'passes no argument names to run script tasks by default' do
+    stub_package_json(
+      path: './package.json',
+      contents: JSON.dump({ scripts: { test: 'run tests' } })
+    )
+
+    namespace :npm do
+      described_class.define
+    end
+
+    task = Rake::Task['npm:test']
+
+    expect(task.arg_names).to(eq([]))
+  end
+
+  it 'passes the provided argument names to defined run script tasks ' \
+     'when supplied' do
+    argument_names = %i[deployment_identifier region]
+
+    stub_package_json(
+      path: './package.json',
+      contents: JSON.dump(
+        {
+          scripts: {
+            test: 'run tests',
+            start: 'start up',
+            stop: 'shutdown'
+          }
+        }
+      )
+    )
+
+    namespace :npm do
+      described_class.define(argument_names: argument_names)
+    end
+
+    %w[test start stop].each do |script|
+      task = Rake::Task["npm:#{script}"]
+
+      expect(task.arg_names).to(eq(argument_names))
+    end
+  end
+
+  it 'passes no environment to run script tasks by default' do
+    stub_package_json(
+      path: './package.json',
+      contents: JSON.dump({ scripts: { test: 'run tests' } })
+    )
+
+    namespace :npm do
+      described_class.define
+    end
+
+    task = Rake::Task['npm:test']
+
+    expect(task.creator.environment).to(eq({}))
+  end
+
+  it 'passes the provided environment to defined run script tasks ' \
+     'when supplied' do
+    stub_package_json(
+      path: './package.json',
+      contents: JSON.dump(
+        {
+          scripts: {
+            test: 'run tests',
+            start: 'start up',
+            stop: 'shutdown'
+          }
+        }
+      )
+    )
+
+    namespace :npm do
+      described_class.define(environment: { SOME: 'env-var' })
+    end
+
+    %w[test start stop].each do |script|
+      task = Rake::Task["npm:#{script}"]
+
+      expect(task.creator.environment)
+        .to(eq({ SOME: 'env-var' }))
+    end
+  end
+
   def stub_package_json(opts)
     allow(File)
       .to(receive(:read)
