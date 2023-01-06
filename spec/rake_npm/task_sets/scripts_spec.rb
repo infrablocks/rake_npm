@@ -45,6 +45,139 @@ describe RakeNPM::TaskSets::Scripts do
     end
   end
 
+  it 'includes only the specified scripts from package.json' do
+    stub_package_json(
+      path: './package.json',
+      contents: JSON.dump(
+        {
+          scripts: {
+            test: 'run tests',
+            start: 'start up',
+            stop: 'shutdown'
+          }
+        }
+      )
+    )
+
+    namespace :npm do
+      described_class.define(include: %w[start stop])
+    end
+
+    expect(Rake.application).not_to(have_task_defined('npm:test'))
+  end
+
+  it 'excludes all the specified scripts from package.json' do
+    stub_package_json(
+      path: './package.json',
+      contents: JSON.dump(
+        {
+          scripts: {
+            test: 'run tests',
+            start: 'start up',
+            stop: 'shutdown'
+          }
+        }
+      )
+    )
+
+    namespace :npm do
+      described_class.define(exclude: %w[start stop])
+    end
+
+    %w[start stop].each do |script|
+      expect(Rake.application).not_to(have_task_defined("npm:#{script}"))
+    end
+  end
+
+  it 'passes a nil directory to run script tasks by default' do
+    stub_package_json(
+      path: './package.json',
+      contents: JSON.dump({ scripts: { test: 'run tests' } })
+    )
+
+    namespace :npm do
+      described_class.define
+    end
+
+    task = Rake::Task['npm:test']
+
+    expect(task.creator.directory).to(be_nil)
+  end
+
+  it 'defines tasks for scripts using package.json from the ' \
+     'specified directory' do
+    stub_package_json(
+      path: './nested/package.json',
+      contents: JSON.dump(
+        {
+          scripts: {
+            test: 'run tests',
+            start: 'start up',
+            stop: 'shutdown'
+          }
+        }
+      )
+    )
+
+    namespace :npm do
+      described_class.define(directory: './nested')
+    end
+
+    %w[test start stop].each do |script|
+      expect(Rake.application).to(have_task_defined("npm:#{script}"))
+    end
+  end
+
+  it 'passes directory to defined run script tasks when specified' do
+    stub_package_json(
+      path: './nested/package.json',
+      contents: JSON.dump(
+        {
+          scripts: {
+            test: 'run tests',
+            start: 'start up',
+            stop: 'shutdown'
+          }
+        }
+      )
+    )
+
+    namespace :npm do
+      described_class.define(directory: './nested')
+    end
+
+    %w[test start stop].each do |script|
+      task = Rake::Task["npm:#{script}"]
+
+      expect(task.creator.directory).to(eq('./nested'))
+    end
+  end
+
+  it 'passes script names to defined run script tasks' do
+    stub_package_json(
+      path: './package.json',
+      contents: JSON.dump(
+        {
+          scripts: {
+            test: 'run tests',
+            start: 'start up',
+            stop: 'shutdown'
+          }
+        }
+      )
+    )
+
+    namespace :npm do
+      described_class.define
+    end
+
+    %w[test start stop].each do |script|
+      task = Rake::Task["npm:#{script}"]
+
+      expect(task.creator.script).to(eq(script))
+    end
+  end
+
   def stub_package_json(opts)
     allow(File)
       .to(receive(:read)
