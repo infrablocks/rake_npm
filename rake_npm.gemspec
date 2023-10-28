@@ -40,7 +40,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'colored2', '~> 3.1'
   spec.add_dependency 'rake_dependencies', '~> 3.1'
   spec.add_dependency 'rake_factory', '~> 0.23'
-  spec.add_dependency 'ruby_npm', '~> 0.1'
+  spec.add_dependency 'ruby_npm', '0.1.0.pre.7'
 
   spec.add_development_dependency 'activesupport'
   spec.add_development_dependency 'bundler'
@@ -48,6 +48,8 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'memfs'
   spec.add_development_dependency 'rake'
   spec.add_development_dependency 'rake_circle_ci'
+  spec.add_development_dependency 'rake_git'
+  spec.add_development_dependency 'rake_git_crypt'
   spec.add_development_dependency 'rake_github'
   spec.add_development_dependency 'rake_gpg'
   spec.add_development_dependency 'rake_ssh'
