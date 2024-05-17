@@ -5,7 +5,7 @@ PATH
       colored2 (~> 3.1)
       rake_dependencies (~> 3.1)
       rake_factory (~> 0.23)
-      ruby_npm (= 0.1.0.pre.7)
+      ruby_npm (= 0.1.0.pre.10)
 
 GEM
   remote: https://rubygems.org/
@@ -26,7 +26,7 @@ GEM
     base64 (0.1.1)
     bigdecimal (3.1.4)
     colored2 (3.1.2)
-    concurrent-ruby (1.2.2)
+    concurrent-ruby (1.2.3)
     connection_pool (2.4.1)
     diff-lcs (1.5.0)
     docile (1.4.0)
@@ -151,7 +151,7 @@ GEM
       lino (~> 3.0)
     ruby_gpg2 (0.10.0)
       lino (~> 3.0)
-    ruby_npm (0.1.0.pre.7)
+    ruby_npm (0.1.0.pre.10)
       immutable-struct (~> 2.4)
       lino (~> 3.0)
     rubyzip (2.3.2)
