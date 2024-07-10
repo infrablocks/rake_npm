@@ -211,7 +211,7 @@ describe RakeNPM::TaskSets::Scripts do
     )
 
     namespace :npm do
-      described_class.define(argument_names: argument_names)
+      described_class.define(argument_names:)
     end
 
     %w[test start stop].each do |script|

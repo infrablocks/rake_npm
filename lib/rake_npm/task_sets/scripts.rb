@@ -19,7 +19,7 @@ module RakeNPM
         around_define(application) do
           scripts.each_key do |script|
             define_run_script_on(
-              application, { name: script, script: script }
+              application, { name: script, script: }
             )
           end
         end
